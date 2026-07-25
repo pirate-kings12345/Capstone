@@ -29,7 +29,10 @@ export function mapResponseToSpecies(g: GeminiScanResponse, scanId: string, imag
 }
 
 const SCAN_TIMEOUT_MS = 60_000;
-const API_ENDPOINT    = '/api/scan';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_ENDPOINT = `${API_BASE_URL}/api/scan`;
+
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function s(r: Record<string, any>, k: string, fb = '')   { return typeof r[k] === 'string' ? r[k].trim() || fb : fb; }
@@ -158,6 +161,8 @@ export class AIService {
 
     try {
       report('analyzing', 'AI analyzing species...');
+
+      console.log("CALLING SERVER:", API_ENDPOINT);
 
       const response = await fetch(API_ENDPOINT, {
         method:  'POST',

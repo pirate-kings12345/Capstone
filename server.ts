@@ -10,12 +10,16 @@
  */
 
 import express from 'express';
+import cors from "cors";
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import 'dotenv/config';
 import { getProvider } from './providers/AIProviderFactory';
 
 const app = express();
+app.use(cors());
+app.use(express.json());
+
 const PORT = Number(process.env.PORT ?? 3000);
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
