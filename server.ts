@@ -60,15 +60,15 @@ app.post('/api/scan', async (req, res) => {
   }
 
   // Image size guard — reject base64 strings larger than 8MB (raw bytes ~6MB)
-  if (base64Image && base64Image.length > 20_000_000) {
-    jsonError(
-      res,
-      413,
-      'IMAGE_TOO_LARGE',
-      'Image too large. Maximum size is 20MB.'
-    );
-    return;
-  }
+if (base64Image && base64Image.length > 30000000) {
+  jsonError(
+    res,
+    413,
+    'IMAGE_TOO_LARGE',
+    'Image too large'
+  );
+  return;
+}
 
   const provider = getProvider();
 
