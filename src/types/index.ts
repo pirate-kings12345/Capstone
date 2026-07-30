@@ -1,4 +1,4 @@
-﻿export interface Fish {
+export interface Fish {
   id: string;
   commonName: string;
   scientificName: string;
@@ -145,11 +145,8 @@ export interface AppSettings {
 
 export type AppRoute =
   | 'Splash'
-  | 'Onboarding1'
-  | 'Onboarding2'
-  | 'Onboarding3'
-  | 'OnboardingFinal'
-  | 'UserName'
+  | 'Login'
+  | 'CreateAccount'
   | 'Home'
   | 'Camera'
   | 'Upload'

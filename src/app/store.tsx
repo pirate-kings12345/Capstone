@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { SpeciesInfo, AppSettings } from '../types';
@@ -80,7 +80,7 @@ export const AppStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
     if (Capacitor.isNativePlatform()) {
       StatusBar.setStyle({ style: isDark ? Style.Dark : Style.Light }).catch(() => {});
-      StatusBar.setBackgroundColor({ color: isDark ? '#0f172a' : '#e0f7fa' }).catch(() => {});
+      StatusBar.setBackgroundColor({ color: isDark ? '#001220' : '#E8F4FD' }).catch(() => {});
     }
   }, [settings.theme]);
 

@@ -1,4 +1,4 @@
-﻿import { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
@@ -17,7 +17,7 @@ async function boot(): Promise<void> {
     try {
       await StatusBar.setOverlaysWebView({ overlay: false });
       await StatusBar.setStyle({ style: Style.Dark });
-      await StatusBar.setBackgroundColor({ color: '#e0f7fa' });
+      await StatusBar.setBackgroundColor({ color: '#001830' });
     } catch (_) {}
     try {
       await SplashScreen.hide({ fadeOutDuration: 400 });

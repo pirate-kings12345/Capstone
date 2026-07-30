@@ -6,11 +6,8 @@ import { useHardwareBack } from '../hooks/mobile/useHardwareBack';
 
 // Lazy loading screens
 const Splash = React.lazy(() => import('../features/onboarding/Splash'));
-const Onboarding1 = React.lazy(() => import('../features/onboarding/Onboarding1'));
-const Onboarding2 = React.lazy(() => import('../features/onboarding/Onboarding2'));
-const Onboarding3 = React.lazy(() => import('../features/onboarding/Onboarding3'));
-const OnboardingFinal = React.lazy(() => import('../features/onboarding/OnboardingFinal'));
-const UserName = React.lazy(() => import('../features/onboarding/UserName'));
+const Login = React.lazy(() => import('../features/onboarding/Login'));
+const CreateAccount = React.lazy(() => import('../features/onboarding/CreateAccount'));
 const Home = React.lazy(() => import('../features/home/Home'));
 const CameraPlaceholder = React.lazy(() => import('../features/camera/CameraPlaceholder'));
 const UploadImage = React.lazy(() => import('../features/upload/UploadImage'));
@@ -47,7 +44,7 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     if (!onboardingCompleted) {
       setRouteStack(['Splash']);
     } else if (!userName) {
-      setRouteStack(['UserName']);
+      setRouteStack(['Login']);
     } else {
       setRouteStack(['Home']);
     }
@@ -92,10 +89,18 @@ export const useAppNavigation = () => {
 
 // Fallback Loader component
 const LoadingFallback = () => (
-  <div className="min-h-screen bg-gradient-to-b from-[#e0f7fa] to-[#faf9fc] dark:from-slate-900 dark:to-slate-950 flex flex-col items-center justify-center text-slate-800 dark:text-white">
+  <div
+    className="min-h-screen flex flex-col items-center justify-center"
+    style={{
+      background: 'linear-gradient(180deg, #001220 0%, #003873 50%, #005BBB 100%)',
+      fontFamily: '"Poppins", sans-serif',
+    }}
+  >
     <div className="flex flex-col items-center gap-4">
-      <Loader className="w-10 h-10 text-cyan-500 animate-spin" />
-      <span className="text-sm font-semibold tracking-wider uppercase text-cyan-700 dark:text-cyan-400">Loading AQUAID Vision...</span>
+      <Loader className="w-8 h-8 text-[#35D6FF] animate-spin" />
+      <span className="text-xs font-semibold tracking-widest uppercase text-[#35D6FF]/70">
+        Loading AQUAID...
+      </span>
     </div>
   </div>
 );
@@ -105,9 +110,9 @@ export const AppNavigator: React.FC = () => {
 
   // ──────────────────────────────────────────────
   // Android Hardware Back Button
-  // Routes where back should navigate home instead of popping stack
-  const onboardingRoutes: AppRoute[] = ['Splash', 'Onboarding1', 'Onboarding2', 'Onboarding3', 'OnboardingFinal', 'UserName', 'Home'];
-  const isAtRoot = onboardingRoutes.includes(currentRoute);
+  // Routes where back should not pop the stack (root-level screens)
+  const rootRoutes: AppRoute[] = ['Splash', 'Login', 'CreateAccount', 'Home'];
+  const isAtRoot = rootRoutes.includes(currentRoute);
 
   const handleHardwareBack = useCallback(() => {
     if (isAtRoot) return; // At root — let the OS handle (minimize app)
@@ -121,16 +126,10 @@ export const AppNavigator: React.FC = () => {
     switch (currentRoute) {
       case 'Splash':
         return <Splash />;
-      case 'Onboarding1':
-        return <Onboarding1 />;
-      case 'Onboarding2':
-        return <Onboarding2 />;
-      case 'Onboarding3':
-        return <Onboarding3 />;
-      case 'OnboardingFinal':
-        return <OnboardingFinal />;
-      case 'UserName':
-        return <UserName />;
+      case 'Login':
+        return <Login />;
+      case 'CreateAccount':
+        return <CreateAccount />;
       case 'Home':
         return <Home />;
       case 'Camera':
