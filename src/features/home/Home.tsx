@@ -9,6 +9,8 @@ import { useAppStore } from '../../app/store';
 import { SpeciesInfo } from '../../types';
 import { useAppNavigation } from '../../navigation/AppNavigator';
 import { EmptyState } from '../../components/EmptyState';
+import splashBackground from '../../assets/backgrounds/splash_background.jpg';
+import logo from '../../assets/logos/LogoForLanding.png';
 
 /* ═══════════════════════════════════════════════════════════════════════
    AQUAID HOME DASHBOARD
@@ -144,6 +146,9 @@ export const Home: React.FC = () => {
         fontFamily: '"Poppins", sans-serif',
       }}
     >
+      <img src={splashBackground} alt="Dashboard background" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-slate-100/70 to-white/95" />
+
       {/* ── Subtle water background ── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
@@ -215,6 +220,26 @@ export const Home: React.FC = () => {
       {/* ── Scrollable Content ── */}
       <main className="flex-1 overflow-y-auto overflow-x-hidden relative z-10 pb-20">
         <div className="px-5 pt-2 pb-8">
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="relative mb-5 overflow-hidden rounded-[28px] border border-white/70 bg-white/70 p-4 shadow-[0_14px_40px_rgba(10,102,255,0.12)] backdrop-blur-xl"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#0A66FF]/10 via-transparent to-[#35D6FF]/10" />
+            <div className="relative flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/80 shadow-sm">
+                <img src={logo} alt="AQUAID Logo" className="h-8 w-8 object-contain" />
+              </div>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#64748b]">Dashboard</p>
+                <h2 className="text-base font-semibold text-[#1a2a3a]">Ready to explore the ocean</h2>
+              </div>
+            </div>
+            <p className="relative mt-3 text-sm font-medium leading-relaxed text-[#475569]">
+              Your temporary sign-in is complete. Choose a feature below to begin identifying marine life and browsing insights.
+            </p>
+          </motion.section>
 
           {/* ── Quick Actions ── */}
           <motion.section
