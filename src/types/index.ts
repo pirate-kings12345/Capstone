@@ -141,6 +141,7 @@ export interface AppSettings {
   gpsCoordinates: boolean;
   notificationsEnabled: boolean;
   cameraPermission: 'prompt' | 'granted' | 'denied';
+  avatar: string;
 }
 
 export type AppRoute =
@@ -155,6 +156,7 @@ export type AppRoute =
   | 'Guide'
   | 'SavedResults'
   | 'Settings'
+  | 'Analytics'
   | 'About'
   | 'Help'
   | 'CameraPermissionDenied'

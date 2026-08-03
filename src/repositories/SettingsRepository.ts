@@ -13,6 +13,7 @@ export interface StoredSettings {
   preferredUserType: string;
   notificationsEnabled: boolean;
   onboardingCompleted: boolean;
+  avatar: string;
 }
 
 const DEFAULT: StoredSettings = {
@@ -22,6 +23,7 @@ const DEFAULT: StoredSettings = {
   preferredUserType: 'Students',
   notificationsEnabled: true,
   onboardingCompleted: false,
+  avatar: 'marine',
 };
 
 export class SettingsRepository {
@@ -37,8 +39,19 @@ export class SettingsRepository {
     return SettingsRepository.instance;
   }
 
+  private async ensureAvatarColumn(): Promise<void> {
+    try {
+      const columns = await this.db.query(`PRAGMA table_info(UserSettings)`);
+      const hasAvatar = columns.some((col: any) => col.name === 'avatar');
+      if (!hasAvatar) {
+        await this.db.execute(`ALTER TABLE UserSettings ADD COLUMN avatar TEXT NOT NULL DEFAULT 'marine'`);
+      }
+    } catch {}
+  }
+
   /** Load settings row, inserting defaults if not yet present. */
   public async getSettings(): Promise<StoredSettings> {
+    await this.ensureAvatarColumn();
     const rows = await this.db.query(
       `SELECT * FROM UserSettings WHERE id = 'singleton'`
     );
@@ -54,17 +67,19 @@ export class SettingsRepository {
       preferredUserType:    r.preferredUserType    ?? 'Students',
       notificationsEnabled: Boolean(r.notificationsEnabled ?? 1),
       onboardingCompleted:  Boolean(r.onboardingCompleted  ?? 0),
+      avatar:               r.avatar               ?? 'marine',
     };
   }
 
   /** Upsert the singleton settings row. */
   public async saveSettings(s: Partial<StoredSettings>): Promise<void> {
+    await this.ensureAvatarColumn();
     const current = await this.getSettingsRaw();
     const merged = { ...DEFAULT, ...current, ...s };
     await this.db.execute(
       `INSERT OR REPLACE INTO UserSettings
-         (id, userName, theme, language, preferredUserType, notificationsEnabled, onboardingCompleted, updatedAt)
-       VALUES ('singleton', ?, ?, ?, ?, ?, ?, datetime('now'))`,
+         (id, userName, theme, language, preferredUserType, notificationsEnabled, onboardingCompleted, avatar, updatedAt)
+       VALUES ('singleton', ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
       [
         merged.userName,
         merged.theme,
@@ -72,6 +87,7 @@ export class SettingsRepository {
         merged.preferredUserType,
         merged.notificationsEnabled ? 1 : 0,
         merged.onboardingCompleted  ? 1 : 0,
+        merged.avatar,
       ]
     );
   }

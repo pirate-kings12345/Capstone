@@ -9,21 +9,25 @@
    AQUAID DESIGN TOKENS
    ═══════════════════════════════════════════════════════════════════════ */
 :root {
-  --aquaid-primary: #0A66FF;
-  --aquaid-ocean: #005BBB;
-  --aquaid-deep: #003873;
-  --aquaid-abyss: #001830;
-  --aquaid-midnight: #001220;
-  --aquaid-cyan: #35D6FF;
-  --aquaid-cyan-soft: #7AE4FF;
+  --aquaid-primary: #1F3FAF;
+  --aquaid-secondary: #4FC3F7;
+  --aquaid-accent: #73E3E7;
+  --aquaid-dark: #111111;
+  --aquaid-light: #F7F9FC;
+  --aquaid-ocean: #1F3FAF;
+  --aquaid-deep: #111111;
+  --aquaid-abyss: #111111;
+  --aquaid-midnight: #111111;
+  --aquaid-cyan: #4FC3F7;
+  --aquaid-cyan-soft: #73E3E7;
   --aquaid-white: #FFFFFF;
-  --aquaid-bg: #F5FAFF;
-  --aquaid-bg-warm: #E8F4FD;
-  --aquaid-surface: rgba(255, 255, 255, 0.08);
-  --aquaid-glass: rgba(255, 255, 255, 0.12);
-  --aquaid-glass-border: rgba(255, 255, 255, 0.18);
-  --aquaid-shadow: rgba(0, 24, 48, 0.25);
-  --aquaid-glow: rgba(53, 214, 255, 0.4);
+  --aquaid-bg: #F7F9FC;
+  --aquaid-bg-warm: #F7F9FC;
+  --aquaid-surface: rgba(31, 63, 175, 0.08);
+  --aquaid-glass: rgba(255, 255, 255, 0.85);
+  --aquaid-glass-border: rgba(31, 63, 175, 0.12);
+  --aquaid-shadow: rgba(17, 17, 17, 0.08);
+  --aquaid-glow: rgba(79, 195, 247, 0.25);
 
   --safe-area-top: env(safe-area-inset-top, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
@@ -241,7 +245,7 @@
 
 /* Primary button */
 .aquaid-btn-primary {
-  background: linear-gradient(135deg, var(--aquaid-primary), var(--aquaid-ocean));
+  background: linear-gradient(135deg, var(--aquaid-secondary), var(--aquaid-primary));
   color: white;
   border: none;
   border-radius: 16px;
@@ -252,17 +256,17 @@
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(10, 102, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(31, 63, 175, 0.16);
 }
 
 .aquaid-btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 28px rgba(10, 102, 255, 0.4);
+  box-shadow: 0 10px 28px rgba(31, 63, 175, 0.24);
 }
 
 .aquaid-btn-primary:active {
   transform: scale(0.98);
-  box-shadow: 0 2px 12px rgba(10, 102, 255, 0.25);
+  box-shadow: 0 4px 12px rgba(31, 63, 175, 0.16);
 }
 
 /* Input field */

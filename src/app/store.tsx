@@ -11,6 +11,8 @@ interface AppContextProps {
   setOnboardingCompleted: (val: boolean) => void;
   userName: string;
   setUserName: (val: string) => void;
+  isGuestMode: boolean;
+  setIsGuestMode: (val: boolean) => void;
   settings: AppSettings;
   updateSettings: (val: Partial<AppSettings>) => void;
   history: SpeciesInfo[];
@@ -32,6 +34,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   gpsCoordinates: true,
   notificationsEnabled: true,
   cameraPermission: 'prompt',
+  avatar: 'marine',
 };
 
 const historyRepo  = HistoryRepository.getInstance();
@@ -42,6 +45,7 @@ export const AppStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isDbReady, setDbReady]             = useState(false);
   const [onboardingCompleted, setOnboardingState] = useState(false);
   const [userName, setUserNameState]        = useState('');
+  const [isGuestMode, setGuestModeState]    = useState(false);
   const [settings, setSettingsState]        = useState<AppSettings>(DEFAULT_SETTINGS);
   const [history,  setHistoryState]         = useState<SpeciesInfo[]>([]);
   const [savedResults, setSavedState]       = useState<SpeciesInfo[]>([]);
@@ -58,6 +62,7 @@ export const AppStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           theme:                stored.theme as AppSettings['theme'],
           language:             stored.language as AppSettings['language'],
           notificationsEnabled: stored.notificationsEnabled,
+          avatar:               stored.avatar || prev.avatar,
         }));
         const [hist, saved] = await Promise.all([
           historyRepo.getAllHistory(),
@@ -96,35 +101,50 @@ export const AppStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     await settingsRepo.saveSettings({ userName: val });
   }, []);
 
+  const setIsGuestMode = useCallback((val: boolean) => {
+    setGuestModeState(val);
+    if (val) {
+      setHistoryState([]);
+      setSavedState([]);
+    }
+  }, []);
+
   const updateSettings = useCallback(async (updates: Partial<AppSettings>) => {
     setSettingsState(prev => ({ ...prev, ...updates }));
     await settingsRepo.saveSettings({
       theme:                updates.theme,
       language:             updates.language,
       notificationsEnabled: updates.notificationsEnabled,
+      avatar:               updates.avatar,
     });
   }, []);
 
   const addScanToHistory = useCallback(async (species: SpeciesInfo) => {
+    if (isGuestMode) return;
+
     // Deduplicate by ID — never re-generate the ID or timestamps set by AIService
     if (history.some(h => h.id === species.id)) return;
 
     // species already has id, date, time, imageUrl and all fields set by AIService
     await historyRepo.saveHistory(species);
     setHistoryState(prev => [species, ...prev]);
-  }, [history]);
+  }, [history, isGuestMode]);
 
   const deleteScanFromHistory = useCallback(async (id: string) => {
+    if (isGuestMode) return;
     await historyRepo.deleteHistory(id);
     setHistoryState(prev => prev.filter(h => h.id !== id));
-  }, []);
+  }, [isGuestMode]);
 
   const clearScanHistory = useCallback(async () => {
+    if (isGuestMode) return;
     await historyRepo.clearHistory();
     setHistoryState([]);
-  }, []);
+  }, [isGuestMode]);
 
   const toggleSaveResult = useCallback(async (species: SpeciesInfo) => {
+    if (isGuestMode) return;
+
     const exists = savedResults.some(s => s.scientificName === species.scientificName);
     if (exists) {
       await savedRepo.remove(species.id);
@@ -133,7 +153,7 @@ export const AppStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       await savedRepo.save(species);
       setSavedState(prev => [species, ...prev]);
     }
-  }, [savedResults]);
+  }, [savedResults, isGuestMode]);
 
   const isSaved = useCallback((species: SpeciesInfo) => {
     return savedResults.some(s => s.scientificName === species.scientificName);
@@ -146,6 +166,8 @@ export const AppStoreProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setOnboardingCompleted,
       userName,
       setUserName,
+      isGuestMode,
+      setIsGuestMode,
       settings,
       updateSettings,
       history,

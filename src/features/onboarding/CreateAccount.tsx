@@ -11,7 +11,7 @@ import { useAppStore } from '../../app/store';
 
 export const CreateAccount: React.FC = () => {
   const { navigate } = useAppNavigation();
-  const { setUserName, setOnboardingCompleted } = useAppStore();
+  const { setUserName, setOnboardingCompleted, setIsGuestMode } = useAppStore();
 
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -35,6 +35,7 @@ export const CreateAccount: React.FC = () => {
     setIsLoading(true);
     await new Promise(r => setTimeout(r, 800));
     const displayName = fullName.trim() || 'Aqua Explorer';
+    setIsGuestMode(false);
     setUserName(displayName);
     setOnboardingCompleted(true);
     navigate('Home');
@@ -44,19 +45,20 @@ export const CreateAccount: React.FC = () => {
     <div
       className="fixed inset-0 z-50 flex flex-col overflow-y-auto select-none"
       style={{
-        background: 'linear-gradient(180deg, #F5FAFF 0%, #E8F4FD 50%, #F5FAFF 100%)',
+        background: 'linear-gradient(180deg, #F7F9FC 0%, #F7F9FC 50%, #FFFFFF 100%)',
         fontFamily: '"Poppins", sans-serif',
+        color: '#111111',
       }}
     >
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute -top-20 -left-20 w-60 h-60 rounded-full opacity-30"
-          style={{ background: 'radial-gradient(circle, rgba(53,214,255,0.15) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(79,195,247,0.18) 0%, transparent 70%)' }}
         />
         <div
           className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, rgba(10,102,255,0.2) 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, rgba(31,63,175,0.16) 0%, transparent 70%)' }}
         />
       </div>
 
@@ -71,8 +73,8 @@ export const CreateAccount: React.FC = () => {
           <div
             className="w-14 h-14 rounded-2xl flex items-center justify-center mb-3"
             style={{
-              background: 'linear-gradient(135deg, #0A66FF 0%, #005BBB 100%)',
-              boxShadow: '0 4px 20px rgba(10,102,255,0.3)',
+              background: 'linear-gradient(135deg, #4FC3F7 0%, #1F3FAF 100%)',
+              boxShadow: '0 8px 24px rgba(31,63,175,0.16)',
             }}
           >
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -81,10 +83,10 @@ export const CreateAccount: React.FC = () => {
               <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
             </svg>
           </div>
-          <h2 className="text-xl font-black tracking-[0.15em] text-[#003873]">
+          <h2 className="text-xl font-black tracking-[0.15em] text-[#111111]">
             AQUAID
           </h2>
-          <p className="text-[10px] font-medium tracking-wide text-[#005BBB] mt-0.5">
+          <p className="text-[10px] font-medium tracking-wide text-[#1F3FAF] mt-0.5">
             Fish Recognition & Classification System
           </p>
         </motion.div>
@@ -113,8 +115,8 @@ export const CreateAccount: React.FC = () => {
               transition={{ delay: 0.3 }}
               className="mb-5"
             >
-              <h1 className="text-2xl font-bold text-[#1a2a3a] mb-1">Create Account</h1>
-              <p className="text-sm text-[#64748b]">
+              <h1 className="text-2xl font-bold text-[#111111] mb-1">Create Account</h1>
+              <p className="text-sm text-[#4F5D75]">
                 Join AQUAID and start exploring aquatic species.
               </p>
             </motion.div>
@@ -242,8 +244,8 @@ export const CreateAccount: React.FC = () => {
                 disabled={!isValid || isLoading}
                 className="w-full h-14 rounded-2xl text-white font-bold text-base tracking-wide flex items-center justify-center gap-2 cursor-pointer transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(135deg, #0A66FF 0%, #005BBB 100%)',
-                  boxShadow: isValid ? '0 4px 20px rgba(10,102,255,0.35)' : 'none',
+                  background: 'linear-gradient(135deg, #4FC3F7 0%, #1F3FAF 100%)',
+                  boxShadow: isValid ? '0 8px 24px rgba(31,63,175,0.16)' : 'none',
                 }}
               >
                 {isLoading ? (
@@ -269,7 +271,7 @@ export const CreateAccount: React.FC = () => {
               Already have an account?{' '}
               <button
                 onClick={() => navigate('Login')}
-                className="font-bold text-[#0A66FF] hover:text-[#005BBB] transition-colors cursor-pointer"
+                className="font-bold text-[#1F3FAF] hover:text-[#4FC3F7] transition-colors cursor-pointer"
               >
                 Sign In
               </button>

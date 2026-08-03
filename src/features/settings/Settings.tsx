@@ -1,7 +1,20 @@
 ﻿import React from 'react';
-import { Sliders, Trash2, HardDrive, Sun, Moon, Globe, Bell, Info } from 'lucide-react';
+import { Trash2, HardDrive, Sun, Moon, Globe, UserCircle2, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useAppStore } from '../../app/store';
 import { AppLayout } from '../../layouts/AppLayout';
+
+const Toggle: React.FC<{ checked: boolean; onChange: () => void }> = ({ checked, onChange }) => (
+  <button
+    onClick={onChange}
+    className="relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 cursor-pointer"
+    style={{ background: checked ? '#1F3FAF' : '#CBD5E1' }}
+  >
+    <span
+      className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all duration-200"
+      style={{ left: checked ? '22px' : '2px' }}
+    />
+  </button>
+);
 
 export const Settings: React.FC = () => {
   const {
@@ -9,6 +22,7 @@ export const Settings: React.FC = () => {
     updateSettings,
     history,
     clearScanHistory,
+    userName,
   } = useAppStore();
 
   const toggleTheme = () => {
@@ -22,30 +36,42 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <AppLayout title="Settings" showBack>
+    <AppLayout title="Profile" showBack>
       <div className="space-y-6 pb-12 max-w-xl mx-auto">
-
-        {/* Title header */}
-        <div className="text-center pt-4">
-          <div className="w-16 h-16 bg-cyan-100 dark:bg-cyan-950 rounded-full flex items-center justify-center mx-auto text-cyan-600 dark:text-cyan-400 mb-2">
-            <Sliders className="w-8 h-8" />
-          </div>
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white">Settings</h2>
-          
-        </div>
-
         <div className="waterline h-[1px] w-full" />
+
+        {/* Profile Summary */}
+        <div
+          className="rounded-2xl p-6 border border-slate-200 dark:border-white/10 shadow-sm flex items-center gap-4"
+          style={{ background: 'linear-gradient(135deg, #4FC3F7 0%, #1F3FAF 100%)' }}
+        >
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white/15 border-2 border-white/30">
+            {userName ? (
+              <span className="text-lg font-bold text-white">{userName.charAt(0).toUpperCase()}</span>
+            ) : (
+              <UserCircle2 className="w-8 h-8 text-white" />
+            )}
+          </div>
+          <div className="flex-1">
+            <p className="text-base font-bold text-white">{userName || 'Aqua Explorer'}</p>
+            <p className="text-xs font-medium text-white/75">
+              {history.length} {history.length === 1 ? 'scan' : 'scans'} saved
+            </p>
+          </div>
+        </div>
 
         {/* Scan History */}
         <div className="glass-card-light dark:glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 space-y-4 shadow-sm">
           <div className="flex items-center gap-3">
-            <HardDrive className="w-5 h-5 text-cyan-500" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1F3FAF]/10">
+              <HardDrive className="w-4.5 h-4.5 text-[#1F3FAF]" />
+            </div>
             <h3 className="font-bold text-slate-800 dark:text-white">Scan History</h3>
           </div>
 
           <div className="flex justify-between items-center bg-slate-500/5 px-4 py-2.5 rounded-xl border border-slate-200/50 dark:border-white/5">
             <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">Total Saved Records</span>
-            <span className="text-sm font-bold text-cyan-600 dark:text-cyan-400">{history.length} entries</span>
+            <span className="text-sm font-bold text-[#1F3FAF]">{history.length} entries</span>
           </div>
 
           <button
@@ -58,28 +84,29 @@ export const Settings: React.FC = () => {
 
         {/* Display & Language */}
         <div className="glass-card-light dark:glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 space-y-4 shadow-sm">
-          <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <Sun className="w-5 h-5 text-cyan-500" /> Display & Language
-          </h3>
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1F3FAF]/10">
+              <Sun className="w-4.5 h-4.5 text-[#1F3FAF]" />
+            </div>
+            <h3 className="font-bold text-slate-800 dark:text-white">Display & Language</h3>
+          </div>
 
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Theme</span>
-              <button
-                onClick={toggleTheme}
-                className="px-4 py-2 bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/15 text-xs font-bold text-slate-700 dark:text-slate-200 rounded-xl border border-slate-200 dark:border-white/10 transition-all flex items-center gap-2 cursor-pointer"
-              >
+            <div className="flex justify-between items-center px-1">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
                 {settings.theme === 'light' ? (
-                  <><Moon className="w-4 h-4 text-slate-600" /> Dark Mode</>
+                  <Sun className="w-4 h-4 text-amber-400" />
                 ) : (
-                  <><Sun className="w-4 h-4 text-amber-400" /> Light Mode</>
+                  <Moon className="w-4 h-4 text-slate-500" />
                 )}
-              </button>
+                {settings.theme === 'light' ? 'Light Mode' : 'Dark Mode'}
+              </span>
+              <Toggle checked={settings.theme === 'dark'} onChange={toggleTheme} />
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center px-1">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2">
-                <Globe className="w-4 h-4 text-cyan-500" /> Language
+                <Globe className="w-4 h-4 text-[#1F3FAF]" /> Language
               </span>
               <select
                 value={settings.language}
@@ -95,43 +122,26 @@ export const Settings: React.FC = () => {
           </div>
         </div>
 
-        {/* Notifications */}
-        <div className="glass-card-light dark:glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 space-y-4 shadow-sm">
-          <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <Bell className="w-5 h-5 text-cyan-500" /> Notifications
-          </h3>
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Push Notifications</span>
-            <input
-              type="checkbox"
-              checked={settings.notificationsEnabled}
-              onChange={(e) => updateSettings({ notificationsEnabled: e.target.checked })}
-              className="w-4 h-4 rounded accent-cyan-500 cursor-pointer"
-            />
-          </div>
-        </div>
-
-        {/* App Information */}
-        <div className="glass-card-light dark:glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 space-y-4 shadow-sm">
-          <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <Info className="w-5 h-5 text-cyan-500" /> App Information
-          </h3>
-          <div className="space-y-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
-            <div className="flex justify-between">
-              <span>App Name</span>
-              <span className="font-bold text-slate-800 dark:text-white">AQUAID Marine Suite</span>
+        {/* Privacy & Security (visual only, no store wiring yet) */}
+        <div className="glass-card-light dark:glass-card rounded-2xl p-6 border border-slate-200 dark:border-white/10 space-y-1 shadow-sm">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1F3FAF]/10">
+              <ShieldCheck className="w-4.5 h-4.5 text-[#1F3FAF]" />
             </div>
-            <div className="flex justify-between">
-              <span>Version</span>
-              <span className="font-bold text-slate-800 dark:text-white">2.0.0</span>
-            </div>
+            <h3 className="font-bold text-slate-800 dark:text-white">Privacy & Security</h3>
           </div>
-        </div>
 
+          <button className="w-full flex items-center justify-between py-2.5 cursor-pointer">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Privacy Policy</span>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
+          </button>
+          <button className="w-full flex items-center justify-between py-2.5 cursor-pointer">
+            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Terms of Service</span>
+            <ChevronRight className="w-4 h-4 text-slate-400" />
+          </button>
+        </div>
       </div>
     </AppLayout>
   );
 };
 export default Settings;
-
-

@@ -17,6 +17,7 @@ const SavedResults = React.lazy(() => import('../features/history/SavedResults')
 const SettingsScreen = React.lazy(() => import('../features/settings/Settings'));
 const AboutScreen = React.lazy(() => import('../features/about/About'));
 const HelpScreen = React.lazy(() => import('../features/help/Help'));
+const AnalyticsScreen = React.lazy(() => import('../features/analytics/Analytics'));
 const DetailView = React.lazy(() => import('../features/history/DetailView'));
 const CameraPermissionDenied = React.lazy(() => import('../features/permissions/CameraPermissionDenied'));
 const GalleryPermissionDenied = React.lazy(() => import('../features/permissions/GalleryPermissionDenied'));
@@ -144,6 +145,8 @@ export const AppNavigator: React.FC = () => {
         return <SavedResults />;
       case 'Settings':
         return <SettingsScreen />;
+      case 'Analytics':
+        return <AnalyticsScreen />;
       case 'About':
         return <AboutScreen />;
       case 'Help':

@@ -8,21 +8,46 @@ import logo from '../../assets/logos/LogoForLanding.png';
 
 export const Login: React.FC = () => {
   const { navigate } = useAppNavigation();
-  const { setUserName, setOnboardingCompleted } = useAppStore();
+  const { setUserName, setOnboardingCompleted, setIsGuestMode } = useAppStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetMessage, setResetMessage] = useState('');
 
   const handleSignIn = async () => {
     setIsLoading(true);
     await new Promise((resolve) => setTimeout(resolve, 600));
     const name = email.trim() ? email.split('@')[0] : 'Aqua Explorer';
     const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+    setIsGuestMode(false);
     setUserName(displayName);
     setOnboardingCompleted(true);
     navigate('Home');
+  };
+
+  const handleGuestSignIn = async () => {
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    setIsGuestMode(true);
+    setUserName('Guest');
+    setOnboardingCompleted(true);
+    navigate('Home');
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      setResetMessage('Please enter your email address first.');
+      return;
+    }
+
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    setResetMessage(`Password reset link sent to ${email}. Please check your inbox.`);
+    setIsLoading(false);
+    setShowForgotPassword(false);
   };
 
   return (
@@ -30,7 +55,7 @@ export const Login: React.FC = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, ease: 'easeOut' }}
-      className="relative min-h-screen overflow-hidden bg-black font-sans text-white"
+      className="relative min-h-screen overflow-hidden bg-[#111111] font-sans text-white"
     >
       <img src={splashBackground} alt="Background" className="absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/45 to-black/80" />
@@ -45,7 +70,7 @@ export const Login: React.FC = () => {
           <div className="mb-8 flex flex-col items-center text-center">
             <img src={logo} alt="AQUAID Logo" className="mb-4 h-16 w-16 object-contain" />
             <h2 className="text-xl font-semibold tracking-[0.25em] text-white">AQUAID</h2>
-            <p className="mt-2 text-xs font-light tracking-wide text-white/70">
+            <p className="mt-2 text-xs font-light tracking-wide text-[#73E3E7]">
               Fish Recognition & Classification System
             </p>
           </div>
@@ -53,7 +78,7 @@ export const Login: React.FC = () => {
           <div className="mb-6 text-center">
             <h1 className="text-2xl font-semibold text-white">Welcome Back</h1>
             <p className="mt-2 text-sm font-light text-white/70">
-              Temporary sign-in mode. Tap below to enter the dashboard.
+              Guest mode keeps your activity in this session only and does not save scans or favorites.
             </p>
           </div>
 
@@ -93,6 +118,16 @@ export const Login: React.FC = () => {
               </button>
             </div>
 
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-[13px] font-medium text-[#73E3E7] transition-colors hover:underline"
+              >
+                Forgot password?
+              </button>
+            </div>
+
             <button
               onClick={handleSignIn}
               disabled={isLoading}
@@ -107,7 +142,37 @@ export const Login: React.FC = () => {
                 </span>
               )}
             </button>
+
+            <button
+              onClick={handleGuestSignIn}
+              disabled={isLoading}
+              className="flex h-[48px] w-full items-center justify-center rounded-2xl border border-[#73E3E7]/40 bg-[#1F3FAF]/20 text-[14px] font-semibold text-[#73E3E7] transition-all duration-300 hover:bg-[#1F3FAF]/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              Continue as Guest
+            </button>
           </div>
+
+          {showForgotPassword && (
+            <div className="mt-5 rounded-2xl border border-[#73E3E7]/30 bg-[#1F3FAF]/20 p-4 text-left">
+              <p className="text-sm font-semibold text-white">Reset your password</p>
+              <p className="mt-1 text-xs text-white/70">
+                Enter your email and we’ll send a recovery link to help you sign back in.
+              </p>
+              <button
+                onClick={handleForgotPassword}
+                disabled={isLoading}
+                className="mt-3 flex h-10 w-full items-center justify-center rounded-xl bg-[#73E3E7] text-sm font-semibold text-[#111111] transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isLoading ? 'Sending...' : 'Send Recovery Link'}
+              </button>
+            </div>
+          )}
+
+          {resetMessage && (
+            <div className="mt-4 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 p-3 text-center text-sm text-emerald-200">
+              {resetMessage}
+            </div>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-[13px] font-light text-white/70">
