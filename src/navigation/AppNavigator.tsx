@@ -35,21 +35,13 @@ interface NavigationContextProps {
 const NavigationContext = createContext<NavigationContextProps | undefined>(undefined);
 
 export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { onboardingCompleted, userName } = useAppStore();
-  const [routeStack, setRouteStack] = useState<AppRoute[]>([]);
+  const [routeStack, setRouteStack] = useState<AppRoute[]>(['Splash']);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [selectedSpecies, setSelectedSpecies] = useState<SpeciesInfo | null>(null);
 
-  // Initialize initial route based on onboarding state
   useEffect(() => {
-    if (!onboardingCompleted) {
-      setRouteStack(['Splash']);
-    } else if (!userName) {
-      setRouteStack(['Login']);
-    } else {
-      setRouteStack(['Home']);
-    }
-  }, [onboardingCompleted, userName]);
+    setRouteStack(['Splash']);
+  }, []);
 
   const currentRoute = routeStack[routeStack.length - 1] || 'Splash';
 

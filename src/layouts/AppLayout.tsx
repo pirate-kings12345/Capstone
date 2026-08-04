@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Menu, ArrowLeft, Home, BookOpen, History, Heart, Info, HelpCircle, Settings, BarChart3, LogOut, X } from 'lucide-react';
 import { useAppNavigation } from '../navigation/AppNavigator';
 import { useAppStore } from '../app/store';
+import logo from '../assets/logos/LogoForLanding.png';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 }) => {
   const { currentRoute, navigate, goBack, isMenuOpen, setMenuOpen } = useAppNavigation();
   const { userName, setUserName, setOnboardingCompleted, setIsGuestMode } = useAppStore();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const menuItems = [
     { label: 'Home', icon: Home, route: 'Home' as const },
@@ -35,12 +37,13 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
     await setOnboardingCompleted(false);
     setIsGuestMode(false);
     setMenuOpen(false);
+    setShowLogoutConfirm(false);
     navigate('Login');
   };
 
   return (
     <div
-      className="flex flex-col h-full transition-colors duration-300 relative"
+      className="flex min-h-screen w-full flex-col transition-colors duration-300 relative overflow-hidden"
       style={{
         background: 'linear-gradient(180deg, #F7F9FC 0%, #F7F9FC 40%, #FFFFFF 100%)',
         fontFamily: '"Poppins", sans-serif',
@@ -59,7 +62,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
       {/* ── Fixed Header ── */}
       <header
-        className="flex-shrink-0 z-40 flex justify-between items-center px-5 h-14 relative"
+        className="flex-shrink-0 z-40 flex justify-between items-center px-4 sm:px-5 h-14 relative"
         style={{
           background: 'rgba(255,255,255,0.9)',
           backdropFilter: 'blur(20px)',
@@ -123,41 +126,65 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
       {/* ── Scrollable Content ── */}
       <main className="flex-1 overflow-y-auto overflow-x-hidden relative z-10">
-        <div className="px-5 pt-5 pb-8 max-w-4xl mx-auto">
+        <div className="w-full max-w-4xl mx-auto px-4 sm:px-5 pt-4 sm:pt-5 pb-8">
           {children}
         </div>
       </main>
 
       {/* ── Slide-out Navigation Drawer ── */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
+          <div
+            onClick={() => setShowLogoutConfirm(false)}
+            className="absolute inset-0"
+            style={{ background: 'rgba(0,24,48,0.45)', backdropFilter: 'blur(4px)' }}
+          />
+          <div className="relative w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-4 sm:p-5 shadow-2xl">
+            <h3 className="text-lg font-bold text-[#111111]">Log out?</h3>
+            <p className="mt-2 text-sm text-[#4F5D75]">Are you sure you want to sign out of AQUAID?</p>
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-[#4F5D75] hover:bg-slate-50 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex-1 rounded-xl bg-rose-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-600 cursor-pointer"
+              >
+                Yes, Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 flex">
+        <div className="fixed inset-0 z-[70] flex pointer-events-auto">
           <div
             onClick={() => setMenuOpen(false)}
-            className="fixed inset-0"
-            style={{ background: 'rgba(0,24,48,0.4)', backdropFilter: 'blur(4px)' }}
+            className="absolute inset-0"
+            style={{ background: 'rgba(2, 10, 24, 0.72)', backdropFilter: 'blur(5px)', WebkitBackdropFilter: 'blur(5px)' }}
           />
           <div
-            className="relative w-80 max-w-xs h-full flex flex-col z-10 p-6"
+            className="relative w-[88vw] max-w-[320px] h-full flex flex-col z-10 p-4 sm:p-6"
             style={{
-              background: 'rgba(255,255,255,0.95)',
+              background: 'linear-gradient(180deg, #FFFFFF 0%, #F7F9FC 100%)',
               backdropFilter: 'blur(24px)',
               WebkitBackdropFilter: 'blur(24px)',
-              boxShadow: '4px 0 32px rgba(17,17,17,0.10)',
-              borderRight: '1px solid rgba(31,63,175,0.08)',
+              boxShadow: '16px 0 48px rgba(17,17,17,0.22)',
+              borderRight: '1px solid rgba(31,63,175,0.14)',
             }}
           >
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-2.5">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                <img
+                  src={logo}
+                  alt="AQUAID Logo"
+                  className="w-8 h-8 rounded-lg object-contain"
                   style={{ background: 'linear-gradient(135deg, #4FC3F7, #1F3FAF)' }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
-                    <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
-                    <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1" />
-                  </svg>
-                </div>
+                />
                 <span className="font-black text-lg text-[#111111] tracking-wider">AQUAID</span>
               </div>
               <button
@@ -216,7 +243,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
             <div className="mt-auto space-y-3">
               <button
-                onClick={handleLogout}
+                onClick={() => {
+                  setMenuOpen(false);
+                  setShowLogoutConfirm(true);
+                }}
                 className="w-full flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-100 cursor-pointer"
               >
                 <LogOut className="h-4 w-4" />
