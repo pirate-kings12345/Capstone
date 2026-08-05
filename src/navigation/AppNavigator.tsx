@@ -19,6 +19,7 @@ const AboutScreen = React.lazy(() => import('../features/about/About'));
 const HelpScreen = React.lazy(() => import('../features/help/Help'));
 const AnalyticsScreen = React.lazy(() => import('../features/analytics/Analytics'));
 const DetailView = React.lazy(() => import('../features/history/DetailView'));
+const ProfileScreen = React.lazy(() => import('../features/profile/Profile'));
 const CameraPermissionDenied = React.lazy(() => import('../features/permissions/CameraPermissionDenied'));
 const GalleryPermissionDenied = React.lazy(() => import('../features/permissions/GalleryPermissionDenied'));
 
@@ -35,12 +36,14 @@ interface NavigationContextProps {
 const NavigationContext = createContext<NavigationContextProps | undefined>(undefined);
 
 export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [routeStack, setRouteStack] = useState<AppRoute[]>(['Splash']);
+  const { onboardingCompleted, userName } = useAppStore();
+  const [routeStack, setRouteStack] = useState<AppRoute[]>([]);
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [selectedSpecies, setSelectedSpecies] = useState<SpeciesInfo | null>(null);
 
+  // Initialize initial route based on onboarding state
   useEffect(() => {
-    setRouteStack(['Splash']);
+    // We intentionally let Splash handle the initial navigation
   }, []);
 
   const currentRoute = routeStack[routeStack.length - 1] || 'Splash';
@@ -143,6 +146,8 @@ export const AppNavigator: React.FC = () => {
         return <AboutScreen />;
       case 'Help':
         return <HelpScreen />;
+      case 'Profile':
+        return <ProfileScreen />;
       case 'Detail':
         // DetailView handles the null selectedSpecies state internally
         return <DetailView />;

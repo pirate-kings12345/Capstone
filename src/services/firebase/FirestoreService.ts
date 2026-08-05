@@ -1,4 +1,4 @@
-﻿/**
+/**
  * FirestoreService.ts
  * Low-level Firestore operations. Never called directly from UI.
  * All access goes through repositories -> SyncService -> FirestoreService.
@@ -24,7 +24,7 @@ import {
 import { getFirebaseDb, isFirebaseConfigured } from '../../config/firebase';
 import { AuthService } from './AuthService';
 
-export type FirestoreCollection = 'species' | 'history' | 'saved_results' | 'settings';
+export type FirestoreCollection = 'species' | 'history' | 'saved_results' | 'settings' | 'profile' | 'sync';
 
 export class FirestoreService {
   private static instance: FirestoreService;

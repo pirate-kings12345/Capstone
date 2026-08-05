@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "835811416294",
+    "project_id": "aquaid-32865",
+    "storage_bucket": "aquaid-32865.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:835811416294:android:7fc04be0eb6882b8160327",
+        "android_client_info": {
+          "package_name": "com.aquaid.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "835811416294-sev9nter8ti8tboidfrp63mr5r1fi503.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aquaid.app",
+            "certificate_hash": "dd1a7ef5884bca5df8ef7363824e4491cf75476e"
+          }
+        },
+        {
+          "client_id": "835811416294-s34hmvlen8bkbc4iurd49sthmc6p0eng.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJGEhB9mOVZvqPYTWasymEvUnM1HykVxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "835811416294-s34hmvlen8bkbc4iurd49sthmc6p0eng.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

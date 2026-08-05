@@ -53,16 +53,10 @@ const bottomNavItems = [
     route: 'Guide' as const,
   },
   {
-    id: 'history',
-    label: 'History',
-    icon: History,
-    route: 'History' as const,
-  },
-  {
     id: 'profile',
     label: 'Profile',
     icon: User,
-    route: 'Settings' as const,
+    route: 'Profile' as const,
   },
 ];
 
@@ -70,9 +64,24 @@ const bottomNavItems = [
 
 const sideMenuItems = [
   {
-    label: 'Home',
+    label: 'Dashboard',
     icon: HomeIcon,
     route: 'Home' as const,
+  },
+  {
+    label: 'Live Detection',
+    icon: Camera,
+    route: 'Camera' as const,
+  },
+  {
+    label: 'History',
+    icon: History,
+    route: 'History' as const,
+  },
+  {
+    label: 'Species Library',
+    icon: BookOpen,
+    route: 'Guide' as const,
   },
   {
     label: 'Analytics',
@@ -83,31 +92,6 @@ const sideMenuItems = [
     label: 'Settings',
     icon: SettingsIcon,
     route: 'Settings' as const,
-  },
-  {
-    label: 'Fish Guide',
-    icon: BookOpen,
-    route: 'Guide' as const,
-  },
-  {
-    label: 'Scan History',
-    icon: History,
-    route: 'History' as const,
-  },
-  {
-    label: 'Saved Results',
-    icon: Heart,
-    route: 'SavedResults' as const,
-  },
-  {
-    label: 'About',
-    icon: Info,
-    route: 'About' as const,
-  },
-  {
-    label: 'Help',
-    icon: HelpCircle,
-    route: 'Help' as const,
   },
 ];
 
@@ -361,43 +345,7 @@ export const Home: React.FC = () => {
               </h2>
             </div>
 
-            <div className="grid grid-cols-3 gap-3">
-
-              {/* Upload */}
-
-              <button
-                onClick={() => navigate('Upload')}
-                className="bg-white rounded-[22px] p-4 text-left cursor-pointer active:scale-[0.97] transition-transform"
-                style={{
-                  boxShadow: '0 8px 25px rgba(31,63,175,0.09)',
-                  border: '1px solid rgba(31,63,175,0.06)',
-                }}
-              >
-                <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center mb-4"
-                  style={{
-                    background: '#E6F5FF',
-                  }}
-                >
-                  <ImageIcon
-                    className="w-5 h-5"
-                    style={{ color: '#1489D5' }}
-                  />
-                </div>
-
-                <p className="text-[12px] font-bold text-[#102A43] leading-tight">
-                  Upload Image
-                </p>
-
-                <p className="text-[10px] text-[#70839A] mt-2 leading-relaxed">
-                  Choose from your gallery
-                </p>
-
-                <ChevronRight
-                  className="w-4 h-4 mt-3"
-                  style={{ color: '#7990A8' }}
-                />
-              </button>
+            <div className="grid grid-cols-2 gap-3">
 
               {/* Library */}
 
@@ -494,10 +442,10 @@ export const Home: React.FC = () => {
               {history.length > 0 && (
                 <button
                   onClick={() => navigate('History')}
-                  className="text-[12px] text-[#1762C4] font-bold cursor-pointer"
+                  className="text-[12px] text-[#1762C4] font-bold cursor-pointer flex items-center"
                 >
                   View All
-                  <ChevronRight className="inline w-3.5 h-3.5 ml-0.5" />
+                  <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
                 </button>
               )}
             </div>
@@ -517,32 +465,20 @@ export const Home: React.FC = () => {
                 />
               </div>
             ) : (
-              <div
-                className="rounded-[24px] overflow-hidden bg-white"
-                style={{
-                  boxShadow: '0 8px 25px rgba(31,63,175,0.08)',
-                  border: '1px solid rgba(31,63,175,0.06)',
-                }}
-              >
-                {history.slice(0, 5).map((item, index) => (
+              <div className="space-y-3">
+                {history.slice(0, 3).map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleNavigateToDetail(item)}
-                    className="w-full flex items-center gap-3 p-3.5 text-left cursor-pointer hover:bg-[#F7FBFF] active:bg-[#F0F7FC] transition-colors"
+                    className="w-full flex items-center gap-3 p-3 bg-white rounded-[20px] text-left cursor-pointer active:scale-[0.98] transition-transform shadow-sm"
                     style={{
-                      borderBottom:
-                        index < Math.min(history.length, 5) - 1
-                          ? '1px solid rgba(31,63,175,0.07)'
-                          : 'none',
+                      border: '1px solid rgba(31,63,175,0.06)',
                     }}
                   >
-                    {/* Image */}
-
+                    {/* Thumbnail */}
                     <div
-                      className="w-[68px] h-[68px] shrink-0 overflow-hidden rounded-[16px]"
-                      style={{
-                        background: '#EAF4FA',
-                      }}
+                      className="w-14 h-14 shrink-0 overflow-hidden rounded-[14px]"
+                      style={{ background: '#EAF4FA' }}
                     >
                       <img
                         src={item.imageUrl}
@@ -552,28 +488,23 @@ export const Home: React.FC = () => {
                       />
                     </div>
 
-                    {/* Species Info */}
-
+                    {/* Details */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-bold text-[#102A43] truncate">
+                      <p className="text-[14px] font-bold text-[#102A43] truncate leading-tight">
                         {item.commonName}
                       </p>
-
-                      {item.scientificName && (
-                        <p className="text-[11px] italic text-[#7890A6] truncate mt-1">
-                          {item.scientificName}
-                        </p>
-                      )}
-
-                      <p className="text-[10px] text-[#8A9BAD] mt-1">
-                        Identification result
-                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[11px] text-[#7890A6]">
+                          {item.date}
+                        </span>
+                        <span className="w-1 h-1 rounded-full bg-[#D1D9E0]"></span>
+                        <span className="text-[11px] font-bold text-[#1762C4]">
+                          {item.confidence.toFixed(1)}% Match
+                        </span>
+                      </div>
                     </div>
 
-                    <ChevronRight
-                      className="w-5 h-5 shrink-0"
-                      style={{ color: '#8296A9' }}
-                    />
+                    <ChevronRight className="w-5 h-5 shrink-0 text-[#8296A9]" />
                   </button>
                 ))}
               </div>
@@ -654,9 +585,8 @@ export const Home: React.FC = () => {
             <button
               key={item.id}
               onClick={() => navigate(item.route)}
-              className={`aquaid-bottom-nav-item ${
-                isActive ? 'active' : ''
-              }`}
+              className={`aquaid-bottom-nav-item ${isActive ? 'active' : ''
+                }`}
               style={{
                 color: isActive ? '#1F3FAF' : '#94a3b8',
               }}
@@ -791,28 +721,26 @@ export const Home: React.FC = () => {
                       navigate(item.route);
                       setMenuOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-semibold transition-all text-sm cursor-pointer ${
-                      isActive
-                        ? 'text-white'
-                        : 'text-[#4F5D75] hover:text-[#111111] hover:bg-[#1F3FAF]/5'
-                    }`}
+                    className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-xl font-semibold transition-all text-sm cursor-pointer ${isActive
+                      ? 'text-white'
+                      : 'text-[#4F5D75] hover:text-[#111111] hover:bg-[#1F3FAF]/5'
+                      }`}
                     style={
                       isActive
                         ? {
-                            background:
-                              'linear-gradient(135deg, #4FC3F7, #1F3FAF)',
-                            boxShadow:
-                              '0 8px 24px rgba(31,63,175,0.18)',
-                          }
+                          background:
+                            'linear-gradient(135deg, #4FC3F7, #1F3FAF)',
+                          boxShadow:
+                            '0 8px 24px rgba(31,63,175,0.18)',
+                        }
                         : {}
                     }
                   >
                     <Icon
-                      className={`w-[18px] h-[18px] flex-shrink-0 ${
-                        isActive
-                          ? 'text-white'
-                          : 'text-[#1F3FAF]'
-                      }`}
+                      className={`w-[18px] h-[18px] flex-shrink-0 ${isActive
+                        ? 'text-white'
+                        : 'text-[#1F3FAF]'
+                        }`}
                     />
 
                     <span>{item.label}</span>

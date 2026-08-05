@@ -1,13 +1,14 @@
-﻿import React, { useRef, useState, ChangeEvent } from 'react';
+import React, { useRef, useState, ChangeEvent } from 'react';
 import { ImageIcon, Upload, Trash2, Loader2, Camera, Sparkles, AlertCircle, X } from 'lucide-react';
 import { useAppNavigation } from '../../navigation/AppNavigator';
 import { AppLayout } from '../../layouts/AppLayout';
 import { useCamera } from '../../hooks/mobile/useCamera';
 import { isNativePlatform } from '../../native/NativeCamera';
 import { useScanAnalysis } from '../../hooks/scan/useScanAnalysis';
+import { BottomSheetResult } from '../../components/BottomSheetResult';
 
 export const UploadImage: React.FC = () => {
-  const { navigate } = useAppNavigation();
+  const { navigate, selectedSpecies, setSelectedSpecies } = useAppNavigation();
   const [webPreview, setWebPreview] = useState<string | null>(null);
   const [webBase64,  setWebBase64]  = useState<string | null>(null);
   const { isAnalyzing, stepLabel, error, analyze, clearError } = useScanAnalysis();
@@ -53,6 +54,16 @@ export const UploadImage: React.FC = () => {
     clearError();
   };
 
+  const handleCloseSheet = () => {
+    setSelectedSpecies(null);
+    navigate('Home');
+  };
+
+  const handleScanAgainSheet = () => {
+    setSelectedSpecies(null);
+    handleClearPreview();
+  };
+
   const handleAnalyze = async () => {
     const base64 = isNativePlatform()
       ? capturedImage
@@ -86,10 +97,10 @@ export const UploadImage: React.FC = () => {
 
         {/* AI analyzing overlay */}
         {isAnalyzing && (
-          <div className="w-full rounded-2xl border border-cyan-500/20 bg-cyan-950/30 p-6 flex flex-col items-center gap-4">
-            <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
+          <div className="w-full rounded-2xl border border-[#4FC3F7]/20 bg-[#1F3FAF]/20 p-6 flex flex-col items-center gap-4">
+            <Loader2 className="w-10 h-10 text-[#4FC3F7] animate-spin" />
             <div className="text-center space-y-1">
-              <p className="text-sm font-bold text-cyan-300">{stepLabel || 'Analyzing...'}</p>
+              <p className="text-sm font-bold text-[#73E3E7]">{stepLabel || 'Analyzing...'}</p>
               <p className="text-xs text-slate-400">Please wait</p>
             </div>
             <div className="flex gap-1.5">
@@ -97,7 +108,7 @@ export const UploadImage: React.FC = () => {
                 const idx = stepLabel.toLowerCase().includes('upload') ? 0
                   : stepLabel.toLowerCase().includes('analyz') ? 1
                   : stepLabel.toLowerCase().includes('receiv') ? 2 : 3;
-                return <span key={s} className={`w-2 h-2 rounded-full ${i <= idx ? 'bg-cyan-400' : 'bg-white/20'}`} />;
+                return <span key={s} className={`w-2 h-2 rounded-full ${i <= idx ? 'bg-[#4FC3F7]' : 'bg-white/20'}`} />;
               })}
             </div>
           </div>
@@ -106,8 +117,8 @@ export const UploadImage: React.FC = () => {
         {/* Camera opening */}
         {isCapturing && !isAnalyzing && (
           <div className="w-full aspect-[4/3] rounded-2xl border border-white/10 glass-card flex flex-col items-center justify-center gap-4">
-            <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
-            <p className="text-sm font-bold text-cyan-600 dark:text-cyan-300 tracking-wide">Opening...</p>
+            <Loader2 className="w-10 h-10 text-[#4FC3F7] animate-spin" />
+            <p className="text-sm font-bold text-[#1F3FAF] dark:text-[#4FC3F7] tracking-wide">Opening...</p>
           </div>
         )}
 
@@ -138,23 +149,23 @@ export const UploadImage: React.FC = () => {
             <button
               onClick={handleAnalyze}
               disabled={isAnalyzing}
-              className="w-full h-14 bg-gradient-to-r from-cyan-600 to-sky-700 hover:from-cyan-500 hover:to-sky-600 disabled:opacity-50 text-white font-bold rounded-2xl shadow-lg shadow-cyan-500/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full h-14 bg-gradient-to-r from-[#4FC3F7] to-[#1F3FAF] hover:opacity-90 disabled:opacity-50 text-white font-bold rounded-2xl shadow-lg shadow-[#1F3FAF]/25 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               {isAnalyzing
                 ? <><Loader2 className="w-5 h-5 animate-spin" /> <span>{stepLabel || 'Analyzing...'}</span></>
-                : <><Sparkles className="w-5 h-5 text-cyan-300" /> <span>Identify Species</span></>}
+                : <><Sparkles className="w-5 h-5 text-white" /> <span>Identify Species</span></>}
             </button>
           </div>
 
         ) : !isCapturing && !isAnalyzing ? (
           <div className="space-y-4">
             <button onClick={handlePickFromGallery}
-              className="w-full aspect-[4/3] rounded-2xl border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-cyan-500 dark:hover:border-cyan-500 transition-all flex flex-col items-center justify-center gap-4 bg-white/40 dark:bg-black/10 hover:bg-white/60 dark:hover:bg-black/20 text-slate-500 dark:text-slate-400 p-6 cursor-pointer">
-              <div className="w-16 h-16 rounded-full bg-cyan-100 dark:bg-cyan-950/40 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
+              className="w-full aspect-[4/3] rounded-2xl border-2 border-dashed border-slate-300 dark:border-white/20 hover:border-[#1F3FAF] dark:hover:border-[#1F3FAF] transition-all flex flex-col items-center justify-center gap-4 bg-white/40 dark:bg-black/10 hover:bg-white/60 dark:hover:bg-black/20 text-slate-500 dark:text-slate-400 p-6 cursor-pointer">
+              <div className="w-16 h-16 rounded-full bg-[#1F3FAF]/10 flex items-center justify-center text-[#1F3FAF]">
                 <Upload className="w-7 h-7" />
               </div>
               <div className="text-center space-y-1">
-                <p className="font-bold text-slate-800 dark:text-white">Choose from Gallery</p>
+                <p className="font-bold text-[#111111] dark:text-white">Choose from Gallery</p>
                 <p className="text-xs text-slate-500">
                   {isNativePlatform() ? 'Opens native photo library' : 'Supports JPG, PNG formats'}
                 </p>
@@ -162,14 +173,19 @@ export const UploadImage: React.FC = () => {
             </button>
 
             <button onClick={handleTakePhoto}
-              className="w-full h-14 flex items-center justify-center gap-3 bg-white/40 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-cyan-500 dark:hover:border-cyan-500/40 rounded-2xl transition-all cursor-pointer text-slate-700 dark:text-slate-300 font-semibold text-sm hover:bg-white/60 dark:hover:bg-white/10">
-              <Camera className="w-5 h-5 text-cyan-500" />
+              className="w-full h-14 flex items-center justify-center gap-3 bg-white/40 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-[#1F3FAF] dark:hover:border-[#1F3FAF]/40 rounded-2xl transition-all cursor-pointer text-slate-700 dark:text-slate-300 font-semibold text-sm hover:bg-white/60 dark:hover:bg-white/10">
+              <Camera className="w-5 h-5 text-[#1F3FAF]" />
               {isNativePlatform() ? 'Take a Photo' : 'Open Camera'}
             </button>
           </div>
         ) : null}
 
       </div>
+      <BottomSheetResult
+        species={selectedSpecies}
+        onClose={handleCloseSheet}
+        onScanAgain={handleScanAgainSheet}
+      />
     </AppLayout>
   );
 };

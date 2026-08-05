@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Heart, Trash2, Shield, AlertTriangle, Check } from 'lucide-react';
 import { useAppStore } from '../../app/store';
 import { SpeciesInfo } from '../../types';
@@ -40,7 +40,7 @@ export const SavedResults: React.FC = () => {
             {savedResults.map((item) => (
               <div 
                 key={item.id} 
-                className="glass-card-light dark:glass-card rounded-2xl overflow-hidden border border-slate-100 dark:border-white/10 flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative group"
+                className="aquaid-feature-card rounded-2xl overflow-hidden border border-slate-100 dark:border-white/10 flex flex-col justify-between hover:shadow-lg transition-all duration-300 relative group"
               >
                 {/* Photo Thumbnail */}
                 <div 
@@ -70,7 +70,7 @@ export const SavedResults: React.FC = () => {
                     <div className="flex justify-between items-start gap-1">
                       <h4 
                         onClick={() => handleNavigateToDetail(item)}
-                        className="font-bold text-slate-900 dark:text-white truncate text-base hover:text-cyan-600 dark:hover:text-cyan-400 cursor-pointer"
+                        className="font-bold text-[#111111] dark:text-white truncate text-base hover:text-[#1F3FAF] dark:hover:text-[#4FC3F7] cursor-pointer"
                       >
                         {item.commonName}
                       </h4>
@@ -82,14 +82,14 @@ export const SavedResults: React.FC = () => {
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                    <p className="text-xs italic text-slate-500 truncate mb-1">
+                    <p className="text-xs italic text-[#4B5563] truncate mb-1">
                       {item.scientificName}
                     </p>
                   </div>
 
-                  <div className="flex justify-between items-center text-[10px] text-slate-400 bg-slate-500/5 p-1 rounded-lg">
+                  <div className="flex justify-between items-center text-[10px] text-[#6B7280] bg-[#1F3FAF]/5 p-1.5 rounded-lg">
                     <span>Family: {item.family}</span>
-                    <span className="font-bold text-cyan-600 dark:text-cyan-400">
+                    <span className="font-bold text-[#1F3FAF] dark:text-[#4FC3F7]">
                       {item.confidence.toFixed(1)}% CF
                     </span>
                   </div>

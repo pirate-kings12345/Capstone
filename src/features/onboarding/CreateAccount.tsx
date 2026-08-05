@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight } from 'lucide-react';
 import { useAppNavigation } from '../../navigation/AppNavigator';
 import { useAppStore } from '../../app/store';
+import { AuthService } from '../../services/firebase/AuthService';
+import { SessionService } from '../../services/firebase/SessionService';
 
 /* ═══════════════════════════════════════════════════════════════════════
    AQUAID CREATE ACCOUNT SCREEN
@@ -28,17 +30,31 @@ export const CreateAccount: React.FC = () => {
     if (!isValid) {
       if (password !== confirmPassword) {
         setError('Passwords do not match');
+      } else if (!fullName.trim() || !email.trim() || password.length < 1) {
+        setError('Please fill in all fields');
       }
       return;
     }
     setError('');
     setIsLoading(true);
-    await new Promise(r => setTimeout(r, 800));
-    const displayName = fullName.trim() || 'Aqua Explorer';
-    setIsGuestMode(false);
-    setUserName(displayName);
-    setOnboardingCompleted(true);
-    navigate('Home');
+    
+    try {
+      const authService = AuthService.getInstance();
+      const sessionService = SessionService.getInstance();
+      
+      await authService.registerWithEmail(email, password);
+      sessionService.saveSession('email');
+      
+      const displayName = fullName.trim() || 'Aqua Explorer';
+      setIsGuestMode(false);
+      setUserName(displayName);
+      setOnboardingCompleted(true);
+      navigate('Home');
+    } catch (err: any) {
+      setError(err.message || 'Failed to create account.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (

@@ -1,5 +1,6 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
-import { Search, Info, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Search, Info, X } from 'lucide-react';
+import { motion } from 'motion/react';
 import { useAppNavigation } from '../../navigation/AppNavigator';
 import { AppLayout } from '../../layouts/AppLayout';
 import { SpeciesInfo } from '../../types';
@@ -9,43 +10,104 @@ import { LoadingSpinner } from '../../components/LoadingStates';
 
 const repo = SpeciesRepository.getInstance();
 
-const getBadgeStyles = (status: string) => {
-  switch (status) {
-    case 'Sustainable':
-      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200/50';
-    case 'Caution':
-      return 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border-amber-200/50';
+const getBadgeStyles = (status: string | undefined) => {
+  switch (status?.toLowerCase()) {
+    case 'sustainable':
+      return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+    case 'caution':
+      return 'bg-amber-100 text-amber-800 border-amber-200';
+    case 'threatened':
+    case 'endangered':
+    case 'vulnerable':
+      return 'bg-rose-100 text-rose-800 border-rose-200';
     default:
-      return 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border-rose-200/50';
+      return 'bg-slate-100 text-slate-800 border-slate-200';
   }
 };
 
+const FishCard: React.FC<{ item: SpeciesInfo; onClick: (item: SpeciesInfo) => void; }> = ({ item, onClick }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -20 }}
+    transition={{ duration: 0.3 }}
+    layout
+    onClick={() => onClick(item)}
+    className="bg-white p-4 rounded-3xl flex gap-4 border border-slate-200/80 shadow-md shadow-slate-500/5 hover:shadow-lg hover:border-slate-300/80 active:scale-[0.98] transition-all duration-300 cursor-pointer group"
+  >
+    <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-slate-100 border-2 border-white shadow-inner">
+      <img
+        src={item.imageUrl}
+        alt={item.commonName}
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      />
+    </div>
+    <div className="flex-grow min-w-0 flex flex-col justify-center">
+      <div>
+        <h4 className="font-extrabold text-slate-900 text-lg truncate">
+          {item.commonName}
+        </h4>
+        <p className="text-sm italic text-slate-500 truncate mb-2">
+          {item.scientificName}
+        </p>
+      </div>
+      <div className="flex items-center gap-2 mt-auto">
+        <span className={`px-2.5 py-1 rounded-md text-xs font-bold border ${getBadgeStyles(item.sustainabilityStatus)}`}>
+          {item.sustainabilityStatus || 'N/A'}
+        </span>
+        <span className="text-xs font-semibold text-slate-600 truncate pr-2 hidden sm:inline">
+          Family: <strong className="font-extrabold">{item.family}</strong>
+        </span>
+      </div>
+    </div>
+    <div className="flex items-center ml-auto">
+      <Info className="w-6 h-6 text-slate-300 group-hover:text-[#1F3FAF] transition-colors" />
+    </div>
+  </motion.div>
+);
+
 export const FishGuide: React.FC = () => {
   const { navigate, setSelectedSpecies } = useAppNavigation();
-  const [searchTerm, setSearchTerm]       = useState('');
-  const [allSpecies, setAllSpecies]       = useState<SpeciesInfo[]>([]);
-  const [filtered, setFiltered]           = useState<SpeciesInfo[]>([]);
-  const [loading, setLoading]             = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [allSpecies, setAllSpecies] = useState<SpeciesInfo[]>([]);
+  const [filtered, setFiltered] = useState<SpeciesInfo[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load all species on mount
+  // Load species list
   useEffect(() => {
+    let isMounted = true;
     (async () => {
       setLoading(true);
-      const data = await repo.getAllSpecies();
-      setAllSpecies(data);
-      setFiltered(data);
-      setLoading(false);
+      try {
+        const data = await repo.getAllSpecies();
+        if (isMounted) {
+          setAllSpecies(data);
+          setFiltered(data);
+        }
+      } catch (e) {
+        console.error('Error fetching species:', e);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
     })();
+    return () => { isMounted = false; };
   }, []);
 
-  // Search via SQLite when term changes
-  const handleSearch = useCallback(async (term: string) => {
+  // Search logic
+  const handleSearch = useCallback((term: string) => {
     setSearchTerm(term);
     if (!term.trim()) {
       setFiltered(allSpecies);
       return;
     }
-    const results = await repo.searchSpecies(term.trim());
+    const query = term.toLowerCase().trim();
+    const results = allSpecies.filter((item) =>
+      item.commonName?.toLowerCase().includes(query) ||
+      item.scientificName?.toLowerCase().includes(query) ||
+      item.family?.toLowerCase().includes(query)
+    );
     setFiltered(results);
   }, [allSpecies]);
 
@@ -56,66 +118,41 @@ export const FishGuide: React.FC = () => {
 
   return (
     <AppLayout title="Fish Guide" showBack>
-      <div className="space-y-6 pb-12">
+      <div className="bg-[#F8FAFC] min-h-screen -m-4 p-4 space-y-5 pb-12 max-w-xl mx-auto font-sans">
 
-        {/* Search */}
         <section className="relative">
-          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-slate-400">
-            <Search className="w-5 h-5" />
+          <div className="relative flex items-center">
+            <Search className="absolute left-5 w-5 h-5 text-slate-400 pointer-events-none" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              placeholder="Search fish species..."
+              className="w-full h-14 pl-14 pr-12 bg-white rounded-2xl border-2 border-slate-200/80 text-slate-900 placeholder:text-slate-400 text-sm font-semibold shadow-sm focus:outline-none focus:ring-2 focus:ring-[#1F3FAF] transition-all"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => handleSearch('')}
+                className="absolute right-4 p-1.5 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-4.5 h-4.5" />
+              </button>
+            )}
           </div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={e => handleSearch(e.target.value)}
-            placeholder="Search fish species..."
-            className="w-full h-14 pl-12 pr-4 bg-white/50 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-white/10 outline-none focus:ring-2 focus:ring-cyan-500 transition-all font-sans text-slate-800 dark:text-white"
-          />
         </section>
 
         {loading ? (
-          <LoadingSpinner message="Loading species..." />
+          <LoadingSpinner message="Loading species from database..." />
         ) : filtered.length === 0 ? (
           <EmptyState
-            message={searchTerm ? 'No fish found' : 'No species available'}
-            subtitle={searchTerm ? 'Try a different name or spelling.' : 'Species will appear here as you scan them.'}
+            message={searchTerm ? 'No Species Found' : 'Fish Guide is Empty'}
+            subtitle={searchTerm ? 'Try a different name or check your spelling.' : 'Species you discover will be added here.'}
             type="guide"
           />
         ) : (
-          <div className="space-y-4">
-            {filtered.map(item => (
-              <div
-                key={item.id}
-                onClick={() => handleNavigateToDetail(item)}
-                className="glass-card-light dark:glass-card p-4 rounded-2xl flex gap-4 hover:shadow-lg transition-all duration-300 border border-slate-100 dark:border-white/10 cursor-pointer group"
-              >
-                <div className="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 shadow-inner border border-white/20 relative">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.commonName}
-                    referrerPolicy="no-referrer"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <div className="flex-grow min-w-0 flex flex-col justify-between">
-                  <div>
-                    <div className="flex justify-between items-start mb-0.5 gap-1">
-                      <h4 className="font-bold text-slate-900 dark:text-white truncate text-base">
-                        {item.commonName}
-                      </h4>
-                      <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-black border tracking-wider ${getBadgeStyles(item.sustainabilityStatus)}`}>
-                        {item.sustainabilityStatus.toUpperCase()}
-                      </span>
-                    </div>
-                    <p className="text-xs italic text-slate-500 truncate mb-1">{item.scientificName}</p>
-                  </div>
-                  <div className="flex justify-between items-center text-[10px] text-slate-400">
-                    <span>Family: {item.family}</span>
-                    <span className="flex items-center gap-1 text-cyan-600 dark:text-cyan-400 font-bold">
-                      <Info className="w-3.5 h-3.5" /> Details
-                    </span>
-                  </div>
-                </div>
-              </div>
+          <div className="space-y-3.5">
+            {filtered.map((item) => (
+              <FishCard key={item.id} item={item} onClick={handleNavigateToDetail} />
             ))}
           </div>
         )}
@@ -123,4 +160,5 @@ export const FishGuide: React.FC = () => {
     </AppLayout>
   );
 };
+
 export default FishGuide;

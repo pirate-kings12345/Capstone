@@ -25,6 +25,7 @@ import {
   isCameraPermanentlyDenied,
 } from '../../native/CameraPermissionService';
 import { useAppNavigation } from '../../navigation/AppNavigator';
+import { pickFromGallery as nativePickFromGallery } from '../../native/NativeCamera';
 
 // ── Types ─────────────────────────────────────────────────────────────────
 
@@ -55,6 +56,8 @@ export interface UseCameraPreviewReturn {
   cycleFlash: () => Promise<void>;
   /** Flip front/rear camera */
   flipCamera: () => Promise<void>;
+  /** Open gallery to pick an image */
+  pickFromGallery: () => Promise<void>;
 }
 
 // ── Web Helpers ───────────────────────────────────────────────────────────
@@ -302,6 +305,17 @@ export function useCameraPreview(): UseCameraPreviewReturn {
     // Web: could re-call getUserMedia with facingMode toggle — future enhancement
   }, [isNative]);
 
+  const pickFromGallery = useCallback(async () => {
+    try {
+      const result = await nativePickFromGallery();
+      setCapturedImage(result.dataUrl);
+      setPreviewState(CameraPreviewState.Captured);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setErrorMessage(`Gallery failed: ${msg}`);
+    }
+  }, []);
+
   return {
     previewState,
     capturedImage,
@@ -316,5 +330,6 @@ export function useCameraPreview(): UseCameraPreviewReturn {
     retake,
     cycleFlash,
     flipCamera,
+    pickFromGallery,
   };
 }

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SyncService.ts
  * Orchestrates bidirectional synchronization between SQLite and Firestore.
  *
@@ -17,12 +17,11 @@
  */
 
 import { FirestoreService } from '../firebase/FirestoreService';
+import { AuthService } from '../firebase/AuthService';
 import { OfflineQueue, QueueCollection } from './OfflineQueue';
-import { FishRepository } from '../../repositories/FishRepository';
 import { HistoryRepository } from '../../repositories/HistoryRepository';
 import { SavedResultsRepository } from '../../repositories/SavedResultsRepository';
 import { SettingsRepository } from '../../repositories/SettingsRepository';
-import { rowToSpecies, speciesToParams, INSERT_SPECIES_SQL } from '../storage/DatabaseMapper';
 import { SQLiteService } from '../storage/SQLiteService';
 import { NetworkService } from '../mobile/NetworkService';
 import { SpeciesInfo } from '../../types';
@@ -33,8 +32,8 @@ export class SyncService {
   private static instance: SyncService;
 
   private firestore   = FirestoreService.getInstance();
+  private auth        = AuthService.getInstance();
   private queue       = OfflineQueue.getInstance();
-  private fishRepo    = FishRepository.getInstance();
   private histRepo    = HistoryRepository.getInstance();
   private savedRepo   = SavedResultsRepository.getInstance();
   private settingsRepo = SettingsRepository.getInstance();
@@ -86,22 +85,26 @@ export class SyncService {
 
   /** Enqueue an upsert operation for the next sync. */
   public queueUpsert(col: QueueCollection, id: string, data: Record<string, any>): void {
+    if (this.auth.isGuest()) return; // Never queue for guests
     this.queue.enqueue({ id, collection: col, operation: 'upsert', data });
     if (this.network.isOnline()) this.sync();
   }
 
   /** Enqueue a delete operation for the next sync. */
   public queueDelete(col: QueueCollection, id: string): void {
+    if (this.auth.isGuest()) return; // Never queue for guests
     this.queue.enqueue({ id, collection: col, operation: 'delete', data: {} });
     if (this.network.isOnline()) this.sync();
   }
 
-  /** How many items are pending upload. */
   public pendingCount(): number { return this.queue.size(); }
 
   // ── Main sync loop ────────────────────────────────────────────────────────
 
   public async sync(): Promise<void> {
+    // 1. Guest protection: Guests NEVER sync to Firestore
+    if (this.auth.isGuest() || !this.auth.isLoggedIn()) return;
+
     if (this.status === 'syncing') return;
     if (!this.network.isOnline()) {
       this.setStatus('offline');
@@ -111,17 +114,27 @@ export class SyncService {
     this.setStatus('syncing');
 
     try {
+      // Offline queue flush
       await this.flushQueue();
+
+      // Download missing from cloud
       await this.downloadHistory();
       await this.downloadSaved();
       await this.downloadSettings();
+
+      // Upload local un-synced to cloud (Bulk uploads)
+      await this.uploadHistory();
+      await this.uploadSavedResults();
+      await this.uploadSettings();
+
       this.setStatus('idle');
-    } catch {
+    } catch (e) {
+      console.error('Sync failed', e);
       this.setStatus('error');
     }
   }
 
-  // ── Upload: flush the offline queue ──────────────────────────────────────
+  // ── Upload ────────────────────────────────────────────────────────────────
 
   private async flushQueue(): Promise<void> {
     const items = this.queue.getAll();
@@ -140,7 +153,70 @@ export class SyncService {
     }
   }
 
-  // ── Download: pull cloud records into SQLite ──────────────────────────────
+  private async uploadHistory(): Promise<void> {
+    const local = await this.histRepo.getAllHistory();
+    const cloud = await this.firestore.getAll('history');
+    const cloudIds = new Set(cloud.map(c => c.id));
+    
+    const toUpload = local.filter(l => !cloudIds.has(l.id)).map(species => ({
+      id: species.id,
+      data: {
+        speciesId:         species.id,
+        speciesData:       species,
+        confidence:        species.confidence,
+        recognitionTime:   species.recognitionTime,
+        recognitionMethod: species.recognitionMethod,
+        modelVersion:      species.modelVersion,
+        datasetVersion:    species.datasetVersion,
+        imageUrl:          species.imageUrl,
+        scanDate:          species.date,
+        scanTime:          species.time,
+      }
+    }));
+    if (toUpload.length > 0) {
+      await this.firestore.batchUpsert('history', toUpload);
+    }
+  }
+
+  private async uploadSavedResults(): Promise<void> {
+    const local = await this.savedRepo.getAll();
+    const cloud = await this.firestore.getAll('saved_results');
+    const cloudIds = new Set(cloud.map(c => c.id));
+
+    const toUpload = local.filter(l => !cloudIds.has(l.id)).map(species => ({
+      id: species.id,
+      data: { speciesId: species.id, speciesData: species }
+    }));
+    if (toUpload.length > 0) {
+      await this.firestore.batchUpsert('saved_results', toUpload);
+    }
+  }
+
+  private async uploadSettings(): Promise<void> {
+    const localRaw = await this.settingsRepo.getSettingsRaw();
+    const cloud = await this.firestore.getOne('settings', 'singleton');
+
+    let shouldUpload = false;
+
+    if (!cloud) {
+      shouldUpload = true;
+    } else {
+      const localTime = new Date(localRaw.updatedAt ?? 0).getTime();
+      const cloudTime = cloud.updatedAt?.toMillis ? cloud.updatedAt.toMillis() : new Date(cloud.updatedAt ?? 0).getTime();
+      
+      // If local is newer, upload it
+      if (localTime > cloudTime) {
+        shouldUpload = true;
+      }
+    }
+
+    if (shouldUpload) {
+      const { updatedAt, id, ...dataToSync } = localRaw; // strip SQLite specific metadata
+      await this.firestore.upsert('settings', 'singleton', dataToSync);
+    }
+  }
+
+  // ── Download ──────────────────────────────────────────────────────────────
 
   private async downloadHistory(): Promise<void> {
     const cloudItems = await this.firestore.getAll('history');
@@ -169,14 +245,22 @@ export class SyncService {
   private async downloadSettings(): Promise<void> {
     const cloud = await this.firestore.getOne('settings', 'singleton');
     if (!cloud) return;
-    // Conflict resolution: cloud wins only if it has a newer timestamp
-    // (we don't store timestamps locally yet — cloud overrides if local hasn't changed recently)
-    await this.settingsRepo.saveSettings({
-      theme:                cloud.theme,
-      language:             cloud.language,
-      notificationsEnabled: cloud.notificationsEnabled,
-      userName:             cloud.userName,
-    });
+
+    const localRaw = await this.settingsRepo.getSettingsRaw();
+    const localTime = new Date(localRaw.updatedAt ?? 0).getTime();
+    const cloudTime = cloud.updatedAt?.toMillis ? cloud.updatedAt.toMillis() : new Date(cloud.updatedAt ?? 0).getTime();
+
+    // Conflict resolution: keep whichever is newer
+    if (cloudTime > localTime) {
+      await this.settingsRepo.saveSettings({
+        theme:                cloud.theme,
+        language:             cloud.language,
+        notificationsEnabled: cloud.notificationsEnabled,
+        userName:             cloud.userName,
+        preferredUserType:    cloud.preferredUserType,
+        onboardingCompleted:  cloud.onboardingCompleted,
+        avatar:               cloud.avatar,
+      });
+    }
   }
 }
-

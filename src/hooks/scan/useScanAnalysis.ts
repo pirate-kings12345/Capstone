@@ -1,4 +1,4 @@
-﻿/**
+/**
  * useScanAnalysis.ts
  * Shared recognition pipeline hook.
  * Passes both base64 AND the display image URL to AIService
@@ -82,7 +82,6 @@ export function useScanAnalysis(): ScanAnalysisState & ScanAnalysisActions {
 
       step('done', 'Done!');
       setSelectedSpecies(species);
-      navigate('Detail');
 
     } catch (err: any) {
       if (abortRef.current) return;

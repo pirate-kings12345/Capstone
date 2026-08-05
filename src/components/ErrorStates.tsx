@@ -13,13 +13,13 @@ export const NoDataError: React.FC<ErrorProps> = ({ message = 'No data available
         <AlertCircle className="w-6 h-6" />
       </div>
       <div className="space-y-1">
-        <h4 className="font-bold text-slate-800 dark:text-white">Data Unavailable</h4>
-        <p className="text-xs text-slate-500">{message}</p>
+        <h4 className="font-bold text-[#111111] dark:text-white">Data Unavailable</h4>
+        <p className="text-xs text-[#4B5563] dark:text-slate-400">{message}</p>
       </div>
       {onRetry && (
         <button 
           onClick={onRetry}
-          className="h-10 px-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-colors"
+          className="h-12 px-6 bg-gradient-to-r from-[#4FC3F7] to-[#1F3FAF] hover:opacity-90 active:scale-[0.98] text-white font-bold rounded-2xl text-sm flex items-center gap-2 cursor-pointer transition-all shadow-md"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Retry
         </button>
@@ -35,13 +35,13 @@ export const ConnectionLostError: React.FC<ErrorProps> = ({ message = 'Network c
         <WifiOff className="w-6 h-6 animate-pulse" />
       </div>
       <div className="space-y-1">
-        <h4 className="font-bold text-slate-800 dark:text-white">Connection Offline</h4>
-        <p className="text-xs text-slate-500">{message}</p>
+        <h4 className="font-bold text-[#111111] dark:text-white">Connection Offline</h4>
+        <p className="text-xs text-[#4B5563] dark:text-slate-400">{message}</p>
       </div>
       {onRetry && (
         <button 
           onClick={onRetry}
-          className="h-10 px-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-colors"
+          className="h-12 px-6 bg-gradient-to-r from-[#4FC3F7] to-[#1F3FAF] hover:opacity-90 active:scale-[0.98] text-white font-bold rounded-2xl text-sm flex items-center gap-2 cursor-pointer transition-all shadow-md"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Reconnect
         </button>
@@ -57,13 +57,13 @@ export const LoadingFailedError: React.FC<ErrorProps> = ({ message = 'Unable to 
         <AlertCircle className="w-6 h-6" />
       </div>
       <div className="space-y-1">
-        <h4 className="font-bold text-slate-800 dark:text-white">Loading Failed</h4>
-        <p className="text-xs text-slate-500">{message}</p>
+        <h4 className="font-bold text-[#111111] dark:text-white">Loading Failed</h4>
+        <p className="text-xs text-[#4B5563] dark:text-slate-400">{message}</p>
       </div>
       {onRetry && (
         <button 
           onClick={onRetry}
-          className="h-10 px-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-colors"
+          className="h-12 px-6 bg-gradient-to-r from-[#4FC3F7] to-[#1F3FAF] hover:opacity-90 active:scale-[0.98] text-white font-bold rounded-2xl text-sm flex items-center gap-2 cursor-pointer transition-all shadow-md"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Reload
         </button>
@@ -79,13 +79,13 @@ export const RecognitionFailedError: React.FC<ErrorProps> = ({ message = 'AI Vis
         <XCircle className="w-6 h-6" />
       </div>
       <div className="space-y-1">
-        <h4 className="font-bold text-slate-800 dark:text-white">Recognition Failed</h4>
-        <p className="text-xs text-slate-500">{message}</p>
+        <h4 className="font-bold text-[#111111] dark:text-white">Recognition Failed</h4>
+        <p className="text-xs text-[#4B5563] dark:text-slate-400">{message}</p>
       </div>
       {onRetry && (
         <button 
           onClick={onRetry}
-          className="h-10 px-4 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 cursor-pointer transition-colors"
+          className="h-12 px-6 bg-gradient-to-r from-[#4FC3F7] to-[#1F3FAF] hover:opacity-90 active:scale-[0.98] text-white font-bold rounded-2xl text-sm flex items-center gap-2 cursor-pointer transition-all shadow-md"
         >
           <RefreshCw className="w-3.5 h-3.5" /> Try Again
         </button>

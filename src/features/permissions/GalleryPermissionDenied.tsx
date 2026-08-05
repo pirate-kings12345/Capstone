@@ -53,7 +53,7 @@ export const GalleryPermissionDenied: React.FC = () => {
       </p>
       <p className="text-xs text-slate-500 text-center leading-relaxed max-w-xs mb-10">
         You previously denied this permission. To enable it, open your device{' '}
-        <span className="text-cyan-400 font-semibold">Settings</span> → <span className="text-cyan-400 font-semibold">Apps</span> → <span className="text-cyan-400 font-semibold">AQUAID</span> → <span className="text-cyan-400 font-semibold">Permissions</span> → Photos.
+        <span className="text-[#4FC3F7] font-semibold">Settings</span> → <span className="text-[#4FC3F7] font-semibold">Apps</span> → <span className="text-[#4FC3F7] font-semibold">AQUAID</span> → <span className="text-[#4FC3F7] font-semibold">Permissions</span> → Photos.
       </p>
 
       {/* Steps */}

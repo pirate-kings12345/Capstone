@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SettingsRepository.ts
  * User preferences persistence via SQLite (single-row singleton pattern).
  */
@@ -92,7 +92,7 @@ export class SettingsRepository {
     );
   }
 
-  private async getSettingsRaw(): Promise<Partial<StoredSettings>> {
+  public async getSettingsRaw(): Promise<Record<string, any>> {
     const rows = await this.db.query(`SELECT * FROM UserSettings WHERE id = 'singleton'`);
     return rows.length > 0 ? rows[0] : {};
   }

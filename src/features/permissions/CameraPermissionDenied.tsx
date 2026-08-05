@@ -56,7 +56,7 @@ export const CameraPermissionDenied: React.FC = () => {
       </p>
       <p className="text-xs text-slate-500 text-center leading-relaxed max-w-xs mb-10">
         You previously denied this permission. To enable it, open your device{' '}
-        <span className="text-cyan-400 font-semibold">Settings</span> → <span className="text-cyan-400 font-semibold">Apps</span> → <span className="text-cyan-400 font-semibold">AQUAID</span> → <span className="text-cyan-400 font-semibold">Permissions</span> → Camera.
+        <span className="text-[#4FC3F7] font-semibold">Settings</span> → <span className="text-[#4FC3F7] font-semibold">Apps</span> → <span className="text-[#4FC3F7] font-semibold">AQUAID</span> → <span className="text-[#4FC3F7] font-semibold">Permissions</span> → Camera.
       </p>
 
       {/* Steps */}
@@ -71,7 +71,7 @@ export const CameraPermissionDenied: React.FC = () => {
             key={step}
             className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3"
           >
-            <span className="w-7 h-7 rounded-full bg-cyan-600/30 border border-cyan-500/30 flex items-center justify-center text-xs font-bold text-cyan-300 shrink-0">
+            <span className="w-7 h-7 rounded-full bg-[#1F3FAF]/30 border border-[#4FC3F7]/30 flex items-center justify-center text-xs font-bold text-[#73E3E7] shrink-0">
               {step}
             </span>
             <span className="text-sm text-slate-300">{text}</span>
@@ -82,7 +82,7 @@ export const CameraPermissionDenied: React.FC = () => {
       {/* Open Settings CTA */}
       <button
         onClick={openAppSettings}
-        className="w-full max-w-sm h-14 flex items-center justify-center gap-2.5 bg-gradient-to-r from-cyan-600 to-sky-700 hover:from-cyan-500 hover:to-sky-600 text-white font-bold rounded-2xl shadow-lg shadow-cyan-500/20 active:scale-[0.99] transition-all cursor-pointer mb-4"
+        className="w-full max-w-sm h-14 flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#1F3FAF] to-[#4FC3F7] hover:from-[#1F3FAF]/90 hover:to-[#4FC3F7]/90 text-white font-bold rounded-2xl shadow-lg shadow-[#4FC3F7]/20 active:scale-[0.99] transition-all cursor-pointer mb-4"
       >
         <Settings className="w-5 h-5" />
         Open App Settings

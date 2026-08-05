@@ -49,6 +49,26 @@ export class StorageService {
   }
 
   /**
+   * Upload a base64 image string as a user's profile photo.
+   * Overwrites any existing photo.
+   * Returns the public download URL, or null on failure.
+   *
+   * @param base64    Base64 data string (with or without data: prefix)
+   */
+  public async uploadProfilePhoto(base64: string): Promise<string | null> {
+    if (!this.isReady()) return null;
+    try {
+      const uid = this.auth.getUid()!;
+      const storage = getFirebaseStorage()!;
+      const clean = base64.replace(/^data:image\/\w+;base64,/, '');
+      const storageRef = ref(storage, `users/${uid}/profile/photo.jpg`);
+      await uploadString(storageRef, clean, 'base64', { contentType: 'image/jpeg' });
+      const url = await getDownloadURL(storageRef);
+      return url;
+    } catch { return null; }
+  }
+
+  /**
    * Delete a stored scan image.
    * @param scanId   Unique scan ID
    */

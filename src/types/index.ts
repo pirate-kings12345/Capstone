@@ -156,6 +156,7 @@ export type AppRoute =
   | 'Guide'
   | 'SavedResults'
   | 'Settings'
+  | 'Profile'
   | 'Analytics'
   | 'About'
   | 'Help'
