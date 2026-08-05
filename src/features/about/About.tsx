@@ -45,7 +45,6 @@ export const About: React.FC = () => {
           </p>
         </section>
 
-<<<<<<< HEAD
         {/* Features */}
         <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <h3 className="text-xs font-black uppercase text-[#1F3FAF] tracking-wider flex items-center gap-2">
@@ -82,9 +81,7 @@ export const About: React.FC = () => {
             </li>
           </ul>
         </section>
-
-=======
->>>>>>> f56a7d8491cc77e2db49173c86fe8b6f7fa4b845
+        
         {/* Team */}
         <section className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <h3 className="text-xs font-black uppercase text-[#1F3FAF] tracking-wider flex items-center gap-2">
